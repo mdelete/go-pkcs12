@@ -633,7 +633,9 @@ func makeCertBag(certBytes []byte, attributes []pkcs12Attribute) (certBag *safeB
 	if certBag.Value.Bytes, err = encodeCertBag(certBytes); err != nil {
 		return nil, err
 	}
-	certBag.Attributes = attributes
+	if len(attributes) > 0 {
+		certBag.Attributes = attributes
+	}
 	return
 }
 
