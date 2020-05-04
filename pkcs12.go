@@ -469,12 +469,17 @@ func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificat
 		return nil, err
 	}
 	
+	encodedFriendlyName, err := bmpString(friendlyName)
+	if err != nil {
+		return nil, err
+	}
+	
 	var friendlyNameAttr pkcs12Attribute
 	friendlyNameAttr.Id = oidFriendlyName
 	friendlyNameAttr.Value.Class = 0
-	friendlyNameAttr.Value.Tag = 17
+	friendlyNameAttr.Value.Tag = 30
 	friendlyNameAttr.Value.IsCompound = true
-	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal([]byte(friendlyName)); err != nil {
+	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal(encodedFriendlyName); err != nil {
 		return nil, err
 	}
 
@@ -501,6 +506,7 @@ func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificat
 		return nil, err
 	}
 	keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
+	keyBag.Attributes = append(keyBag.Attributes, friendlyNameAttr)
 
 	// Construct an authenticated safe with two SafeContents.
 	// The first SafeContents is encrypted and contains the cert bags.
