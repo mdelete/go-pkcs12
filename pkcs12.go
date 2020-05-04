@@ -450,7 +450,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
 // 3DES  The private key bag and the end-entity certificate bag have the
 // LocalKeyId attribute set to the SHA-1 fingerprint of the end-entity
 // certificate.
-func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, password string) (pfxData []byte, err error) {
+func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, password string, friendlyName string) (pfxData []byte, err error) {
 	encodedPassword, err := bmpString(password)
 	if err != nil {
 		return nil, err
@@ -468,10 +468,19 @@ func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificat
 	if localKeyIdAttr.Value.Bytes, err = asn1.Marshal(certFingerprint[:]); err != nil {
 		return nil, err
 	}
+	
+	var friendlyNameAttr pkcs12Attribute
+	friendlyNameAttr.Id = oidFriendlyName
+	friendlyNameAttr.Value.Class = 0
+	friendlyNameAttr.Value.Tag = 17
+	friendlyNameAttr.Value.IsCompound = true
+	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal([]byte(friendlyName)]); err != nil {
+		return nil, err
+	}
 
 	var certBags []safeBag
 	var certBag *safeBag
-	if certBag, err = makeCertBag(certificate.Raw, []pkcs12Attribute{localKeyIdAttr}); err != nil {
+	if certBag, err = makeCertBag(certificate.Raw, []pkcs12Attribute{localKeyIdAttr, friendlyNameAttr}); err != nil {
 		return nil, err
 	}
 	certBags = append(certBags, *certBag)
