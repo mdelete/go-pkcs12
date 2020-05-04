@@ -474,7 +474,7 @@ func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificat
 	friendlyNameAttr.Value.Class = 0
 	friendlyNameAttr.Value.Tag = 17
 	friendlyNameAttr.Value.IsCompound = true
-	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal([]byte(friendlyName)]); err != nil {
+	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal([]byte(friendlyName)); err != nil {
 		return nil, err
 	}
 
