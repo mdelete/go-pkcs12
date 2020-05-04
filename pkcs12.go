@@ -477,7 +477,7 @@ func Encode(rand io.Reader, privateKey interface{}, certificate *x509.Certificat
 	var friendlyNameAttr pkcs12Attribute
 	friendlyNameAttr.Id = oidFriendlyName
 	friendlyNameAttr.Value.Class = 0
-	friendlyNameAttr.Value.Tag = 30
+	friendlyNameAttr.Value.Tag = 17
 	friendlyNameAttr.Value.IsCompound = true
 	if friendlyNameAttr.Value.Bytes, err = asn1.Marshal(encodedFriendlyName); err != nil {
 		return nil, err
